@@ -1,1 +1,30 @@
-I have an idea for a project. I want to create an app using flutter that has a map of my campus. It should load into where the user is, using their live location. There are some buildings in my campus. I can list them out for you if you want it. Each building has a table/some sort of structure that will store all the data of events in that building. All these events are given by users known as "Club_Leaders". Club_Leaders have special logins to be able to add events and update the name, location, timings, information, categories/topics. There should also be temporary users who can make changes to the event info for 24 hours. This info is stored in a table of that building. The event should be visible to normal users and they should be able to go to any of the events. The map will be using the google maps API for all the maps and routing. I want to know how you suggest we approach this. First give me how to do the backend using nodeJS, ExpressJS, MongoDB to create the tables. The tables should have name, location, timings, information, categories/topics, the start time and the end time. If the current time is after the end time, then the event should no longer be visible to the normal user. First categorise this based on location/building name. Secondly, categorise it based on the topic/category. All these should be accesible from a search bar as well
+# Campus Event Mapper
+
+## Description
+Campus Event Mapper is a Flutter-based mobile application designed to help students and faculty navigate campus events easily. The app provides a real-time map of the campus, showcasing ongoing and upcoming events, allowing users to discover and participate in various activities.
+
+## Features
+- Interactive campus map using Google Maps API
+- Real-time location tracking
+- Event creation and management for club leaders
+- Event search and filtering capabilities
+- User authentication and authorization
+- Building-specific event listings
+
+## Technologies Used
+- Frontend: Flutter
+- Backend: Node.js with Express.js
+- Database: MongoDB
+- Authentication: JSON Web Tokens (JWT)
+- Maps: Google Maps API
+
+## Installation
+
+### Prerequisites
+- Flutter SDK
+- Node.js and npm
+- MongoDB
+- Google Maps API key
+
+### Backend Setup
+1. Clone the repository
