@@ -8,7 +8,7 @@ router.post('/', auth, async (req, res) => {
   try {
     const event = new Event({
       ...req.body,
-      createdBy: req.clubLeader.id,
+      createdBy: req.clubLeader._id,
       clubName: req.clubLeader.clubName
     });
     await event.save();
