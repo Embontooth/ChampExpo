@@ -16,7 +16,6 @@ router.post('/', auth, async (req, res) => {
 
     const event = new Event({
       ...req.body,
-      building: building._id,
       createdBy: req.clubLeader._id,
       clubName: req.clubLeader.clubName
     });
