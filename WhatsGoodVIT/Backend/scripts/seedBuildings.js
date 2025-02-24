@@ -6,7 +6,7 @@ const buildings = [
     { name: 'AB1' },
     { name: 'AB2' },
     { name: 'AB3' },
-    { name: 'ClockTower' },
+    { name: 'Clock_Tower' },
     { name: 'MG' }
 ];
 
