@@ -6,12 +6,22 @@ const auth = require('../middleware/auth');
 //Creating the event
 router.post('/', auth, async (req, res) => {
   try {
+    // Find building by name
+    const building = await Building.findOne({ name: req.body.building });
+    if (!building) {
+      return res.status(400).send({ 
+        error: 'Invalid building name. Must be one of: AB1, AB2, AB3, Clock_Tower, MG' 
+      });
+    }
+
     const event = new Event({
       ...req.body,
-      createdBy: req.clubLeader.id,
+      building: building._id,
+      createdBy: req.clubLeader._id,
       clubName: req.clubLeader.clubName
     });
     await event.save();
+    await event.populate('building');
     res.status(201).send(event);
   } catch (error) {
     res.status(400).send(error);
@@ -24,6 +34,7 @@ router.get('/', async (req, res) => {
     const now = new Date();
     const events = await Event.find({ endTime: { $gt: now } })
       .populate('building') //Populates with the actual building data
+      .populate('createdBy', 'clubName -_id') // Only get clubName, exclude _id
       .sort('startTime');
     res.send(events);
   } catch (error) {

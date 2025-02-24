@@ -27,7 +27,7 @@ router.post('/register', async (req, res) => {
       if (!isPasswordMatch) {
         return res.status(401).send({ error: 'Incorrect Password' }); //Password is wrong
       }
-      const token = jwt.sign({ _id: clubLeader.id }, process.env.JWT_SECRET); //Create a secure token using jwt
+      const token = jwt.sign({ _id: clubLeader._id }, process.env.JWT_SECRET); //Create a secure token using jwt
       res.send({ token });
     } catch (error) {
       res.status(400).send(error); //Login Error
