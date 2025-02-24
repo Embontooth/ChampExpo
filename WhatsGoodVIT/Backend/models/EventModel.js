@@ -8,7 +8,6 @@ const EventSchema = new mongoose.Schema({
     information: { type: String },
     roomno: { type: String, required: true},
     categories: [{ type: String }],
-    building: {type: String, required: true},
     clubName: { type: String, required: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'ClubLeader', required: true }
   });

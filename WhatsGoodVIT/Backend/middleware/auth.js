@@ -4,16 +4,17 @@ const ClubLeader = require('../models/ClubLeaderModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
+//Pre enter all the club leader information
 //Creating a new clubleader
-router.post('/register', async (req, res) => {
-    try {
-      const clubLeader = new ClubLeader(req.body);
-      await clubLeader.save();
-      res.status(201).send({ message: 'Club Leader registered successfully' });
-    } catch (error) {
-      res.status(400).send(error);
-    }
-  });
+// router.post('/register', async (req, res) => {
+//     try {
+//       const clubLeader = new ClubLeader(req.body);
+//       await clubLeader.save();
+//       res.status(201).send({ message: 'Club Leader registered successfully' });
+//     } catch (error) {
+//       res.status(400).send(error);
+//     }
+//   });
 
 //Loging in as an existing user
   router.post('/login', async (req, res) => {
