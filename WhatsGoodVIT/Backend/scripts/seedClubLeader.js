@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const ClubLeader = require('../models/ClubLeaderModel'); // Adjust path if needed
 
 const clubLeadersData = [
@@ -16,8 +17,13 @@ async function seedClubLeader() {
         await ClubLeader.deleteMany({});
         console.log('Cleared existing club leaders');
 
+        // Hash passwords before inserting into DB
+        for (let leader of clubLeadersData) {
+            leader.password = await bcrypt.hash(leader.password, 10);
+        }
+
         await ClubLeader.insertMany(clubLeadersData);
-        console.log('Club leaders seeded successfully');
+        console.log('Club leaders seeded successfully with hashed passwords');
     } catch (error) {
         console.error('Error seeding club leaders:', error);
     } finally {
