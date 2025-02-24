@@ -17,10 +17,11 @@ router.post('/', auth, async (req, res) => {
     const event = new Event({
       ...req.body,
       createdBy: req.clubLeader._id,
-      clubName: req.clubLeader.clubName
+      clubName: req.clubLeader.clubName,
+      building: building._id
     });
     await event.save();
-    await event.populate('building');
+    await event.populate('building createdBy', 'name clubName'); 
     res.status(201).send(event);
   } catch (error) {
     res.status(400).send(error);
@@ -30,14 +31,15 @@ router.post('/', auth, async (req, res) => {
 //Getting the event
 router.get('/', async (req, res) => {
   try {
-    const now = new Date();
-    const events = await Event.find({ endTime: { $gt: now } })
-      .populate('building') //Populates with the actual building data
-      .populate('createdBy', 'clubName -_id') // Only get clubName, exclude _id
-      .sort('startTime');
-    res.send(events);
+      const now = new Date();
+      const events = await Event.find({ endTime: { $gt: now } })
+          .populate('building', 'name') // Fetch building name
+          .populate('createdBy', 'clubName -_id') // Fetch clubName, hide _id
+          .sort('startTime');
+      res.json(events);
   } catch (error) {
-    res.status(500).send(error);
+      console.error('Error fetching events:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -45,13 +47,18 @@ router.get('/', async (req, res) => {
 router.get('/building/:buildingId', async (req, res) => {
     try {
       const now = new Date();
+      const building = await Building.findOne({ name: req.params.buildingName });
+        if (!building) {
+            return res.status(404).json({ error: 'Building not found' });
+        }
       const events = await Event.find({
           building: req.params.buildingId,
           endTime: { $gt: now }
-        }).sort('startTime');
-        res.send(events);
+        }).populate('building', 'name').sort('startTime');
+        res.json(events);
     } catch (error) {
-        res.status(500).send(error);
+      console.error('Error fetching events by building:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
@@ -60,13 +67,14 @@ router.get('/building/:buildingId', async (req, res) => {
 router.get('/category/:category', async (req, res) => {
     try {
       const now = new Date();
-      const events = await Event.find({
-        categories: req.params.category,
-        endTime: { $gt: now }
-      }).sort('startTime');
-      res.send(events);
+        const events = await Event.find({ 
+            categories: req.params.category, 
+            endTime: { $gt: now } 
+        }).populate('building', 'name').sort('startTime');
+      res.json(events);;
     } catch (error) {
-      res.status(500).send(error);
+      console.error('Error fetching events by category:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
@@ -74,7 +82,7 @@ router.get('/category/:category', async (req, res) => {
   router.get('/search', async (req, res) => {
     try {
       const now = new Date();
-      const searchTerm = req.query.q;
+      const searchTerm = req.query.q || '';
       const events = await Event.find({
         //Any and all of the following
         $or: [
@@ -83,10 +91,11 @@ router.get('/category/:category', async (req, res) => {
           { clubName: { $regex: searchTerm, $options: 'i' } } //search wrt clubName
         ],
         endTime: { $gt: now }
-      }).sort('startTime');
+      }).populate('building', 'name').sort('startTime');
       res.send(events);
     } catch (error) {
-      res.status(500).send(error);
+      console.error('Error searching events:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   });
 
