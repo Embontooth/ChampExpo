@@ -10,7 +10,23 @@ const EventSchema = new mongoose.Schema({
     categories: [{ type: String }],
     clubName: { type: String, required: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'ClubLeader', required: true }
+  }, {
+    timestamps: true // Automatically adds createdAt and updatedAt fields
   });
+
+  // Ensure startTime is before endTime
+EventSchema.pre('save', function(next) {
+  if (this.startTime >= this.endTime) {
+    return next(new Error('Start time must be before end time'));
+  }
+  next();
+});
+
+//Virtual property ensure that the event is active
+EventSchema.virtual('isActive').get(function() {
+  return new Date() < this.endTime;
+});
+
   EventSchema.index({ categories: 1 }); //Categories in ascending order
   EventSchema.index({ startTime: 1, endTime: 1 }); //Dates in ascending order
   module.exports = mongoose.model('Event', EventSchema);

@@ -5,6 +5,10 @@ const BuildingSchema = new mongoose.Schema({
       enum: ['AB1', 'AB2', 'AB3', 'Clock_Tower', 'MG']
     },
     events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }]
+  }, {
+    timestamps: true
   });
+
   BuildingSchema.index({ name: 1 });
+  
   module.exports = mongoose.model('Building', BuildingSchema);

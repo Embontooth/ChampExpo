@@ -5,6 +5,8 @@ const ClubLeaderSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   clubName: { type: String, required: true },
+}, {
+  timestamps: true
 });
 
 ClubLeaderSchema.pre('save', async function(next) {
