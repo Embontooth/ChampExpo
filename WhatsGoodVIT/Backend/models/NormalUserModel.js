@@ -5,15 +5,14 @@ const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   followedClubs: [{ type: String }],
-  // role: { type: String, default: "user", immutable: true },
 }, {
   timestamps: true
 });
 
-// Pre-save hook to hash passwords
+// Replace unhashed with hashed passwords
 UserSchema.pre('save', async function(next) {
   if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
+    this.password = await bcrypt.hash(this.password, 5);
   }
   next();
 });

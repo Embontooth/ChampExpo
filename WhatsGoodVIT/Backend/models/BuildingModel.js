@@ -9,6 +9,7 @@ const BuildingSchema = new mongoose.Schema({
     timestamps: true
   });
 
+  // Name is indexed  in ascending order
   BuildingSchema.index({ name: 1 });
   
   module.exports = mongoose.model('Building', BuildingSchema);

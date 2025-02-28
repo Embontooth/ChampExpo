@@ -5,15 +5,15 @@ const ClubLeaderSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   clubName: { type: String, required: true },
-  // role: { type: String, default: "clubLeader", immutable: true },
   events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }]
 }, {
   timestamps: true
 });
 
+// Replacing all the non-encrypted passwords with encrypted ones
 ClubLeaderSchema.pre('save', async function(next) {
   if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
+    this.password = await bcrypt.hash(this.password, 5);
   }
   next();
 });
