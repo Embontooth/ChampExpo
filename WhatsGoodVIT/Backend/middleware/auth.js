@@ -1,3 +1,5 @@
+//Contains authMiddleware which moakes sure the token is valid and sends the auth for others to use
+//Handles routes and authentication of the JWT
 const express = require('express');
 const router = express.Router();
 require('dotenv').config();
@@ -94,7 +96,7 @@ router.post('/login-user', async (req, res) => {
         const token = jwt.sign(
             { id: user._id, username: user.username, clubName: user.clubName},
             SECRET_KEY,
-            { expiresIn: "5h" } 
+            { expiresIn: "30d" } 
         );
 
         console.log("Generated Token:", token);
