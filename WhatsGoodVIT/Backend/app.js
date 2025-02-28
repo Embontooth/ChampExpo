@@ -10,7 +10,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-const authRoutes = require('./middleware/auth');
+const authRoutes = require('./routes/auth');
 const eventRoutes = require('./routes/events');
 const buildingRoutes = require('./routes/buildings');
 

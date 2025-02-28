@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
+require('dotenv').config();
 const ClubLeader = require('../models/ClubLeaderModel');
 const User = require('../models/NormalUserModel');
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = process.env.SECRET_KEY || "777";
+const SECRET_KEY = process.env.JWT_SECRET || "777";
 const bcrypt = require('bcrypt');
 
 router.post('/register-user', async (req, res) => {
@@ -36,16 +37,15 @@ router.post('/login-clubleader', async (req, res) => {
         console.log("Login request received:", req.body);
 
         // Find user by username
-        const user = await ClubLeader.findOne({ username });
-
-        if (!user) {
-            return res.status(400).json({ error: "User not found" });
+        const clubLeader = await ClubLeader.findOne({ username });
+        if (!clubLeader) {
+          return res.status(400).json({ error: "User not found" });
         }
 
-        console.log("User found:", user);
+        console.log("User found:", clubLeader);
 
         // Compare hashed password using bcrypt
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, clubLeader.password);
 
         console.log("Password Match:", isMatch);
 
@@ -55,9 +55,9 @@ router.post('/login-clubleader', async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { id: user._id, username: user.username, clubName: user.clubName, role: 'clubLeader' },
-            SECRET_KEY,
-            { expiresIn: "5h" } 
+          { id: clubLeader._id, username: clubLeader.username, role: "clubLeader", clubName: clubLeader.clubName },
+          SECRET_KEY,
+          { expiresIn: "1d" }
         );
 
         console.log("Generated Token:", token);
@@ -94,7 +94,7 @@ router.post('/login-user', async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { id: user._id, username: user.username, clubName: user.clubName, role: "Normal-User" },
+            { id: user._id, username: user.username, clubName: user.clubName},
             SECRET_KEY,
             { expiresIn: "5h" } 
         );
@@ -108,20 +108,31 @@ router.post('/login-user', async (req, res) => {
     }
 });
 
-module.exports = (req, res, next) => {
-  const authHeader = req.header('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Access denied. No token provided.' });
+// Auth middleware - export as a separate object
+const authMiddleware = (req, res, next) => {
+  const token = req.header("Authorization");
+  if (!token) {
+    return res.status(401).json({ error: "Access Denied. No Token Provided." });
   }
-  
-  const token = authHeader.substring(7);
+
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    // Attach the decoded user object (which includes role) to req.user
+    // Extract the token from the Authorization header (remove "Bearer " prefix)
+    const tokenValue = token.startsWith('Bearer ') ? token.slice(7) : token;
+    
+    console.log("Received token:", tokenValue.substring(0, 20) + "..."); // Log partial token for debugging
+    
+    const decoded = jwt.verify(tokenValue, SECRET_KEY);
     req.user = decoded;
+    console.log("Decoded user:", req.user); // Log the decoded user object
     next();
-  } catch (err) {
-    res.status(400).json({ error: 'Invalid token.' });
+  } catch (error) {
+    console.error("Token verification error:", error);
+    res.status(400).json({ error: "Invalid Token" });
   }
 };
-module.exports = router;
+
+// Export both the router and the auth middleware
+module.exports = {
+  router,
+  auth: authMiddleware
+};

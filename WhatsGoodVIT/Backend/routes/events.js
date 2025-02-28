@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/EventModel');
 const Building = require('../models/BuildingModel');
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth'); // Update to use the auth object
 
 //Creating the event
 router.post('/create', auth, async (req, res) => {
-  if (req.user.role !== 'clubLeader') {
+  console.log("User in create event:", req.user); // Add logging to verify req.user
+  if (!req.user || req.user.role !== 'clubLeader') {
     return res.status(403).json({ error: 'Access denied: Only club leaders can create events.' });
   }
   try {

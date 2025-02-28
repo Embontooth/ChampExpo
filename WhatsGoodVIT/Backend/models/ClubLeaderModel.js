@@ -5,6 +5,7 @@ const ClubLeaderSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   clubName: { type: String, required: true },
+  // role: { type: String, default: "clubLeader", immutable: true },
   events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }]
 }, {
   timestamps: true
