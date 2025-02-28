@@ -55,7 +55,7 @@ router.post('/login-clubleader', async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { id: user._id, username: user.username, clubName: user.clubName },
+            { id: user._id, username: user.username, clubName: user.clubName, role: 'clubLeader' },
             SECRET_KEY,
             { expiresIn: "5h" } 
         );
@@ -94,7 +94,7 @@ router.post('/login-user', async (req, res) => {
 
         // Generate JWT token
         const token = jwt.sign(
-            { id: user._id, username: user.username, clubName: user.clubName },
+            { id: user._id, username: user.username, clubName: user.clubName, role: "Normal-User" },
             SECRET_KEY,
             { expiresIn: "5h" } 
         );
