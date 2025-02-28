@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/EventModel');
 const Building = require('../models/BuildingModel');
+const ClubLeader = require('../models/ClubLeaderModel');
 const { auth } = require('../middleware/auth'); // Update to use the auth object
 
 //Creating the event
 router.post('/create', auth, async (req, res) => {
-  console.log("User in create event:", req.user); // Add logging to verify req.user
-  if (!req.user || req.user.role !== 'clubLeader') {
+  if (req.user.role !== 'clubLeader') {
     return res.status(403).json({ error: 'Access denied: Only club leaders can create events.' });
   }
   try {
@@ -18,6 +18,7 @@ router.post('/create', auth, async (req, res) => {
         error: 'Invalid building name. Must be one of: AB1, AB2, AB3, Clock_Tower, MG' 
       });
     }
+
     const event = new Event({
       name: req.body.name,
       building: building._id,
@@ -29,7 +30,23 @@ router.post('/create', auth, async (req, res) => {
       clubName: req.user.clubName, 
       createdBy: req.user.id       
     });
+
+    // Save the event
     await event.save();
+
+    // Update the building document to include this event
+    building.events.push(event._id);
+    await building.save();
+    
+    // Update the club leader document to include this event
+    const clubLeader = await ClubLeader.findById(req.user.id);
+    if (clubLeader) {
+      clubLeader.events.push(event._id);
+      await clubLeader.save();
+      console.log("Event added to club leader's events array");
+    }
+    
+    // Populate building name for response
     await event.populate('building', 'name'); 
     res.status(201).send(event);
   } catch (error) {
