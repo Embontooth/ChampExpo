@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ClubLeader = require('../models/ClubLeaderModel');
-const ClubLeader = require('../models/NormalUserModel');
+const User = require('../models/NormalUserModel');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY || "777";
 const bcrypt = require('bcrypt');
