@@ -14,7 +14,7 @@ router.post('/register-user', async (req, res) => {
         return res.status(400).json({ error: 'Please provide username and password' });
       }
   
-      // Check if the user already exists
+      // Check if the user already exists in normal user model
       const existingUser = await User.findOne({ username });
       if (existingUser) {
         return res.status(400).json({ error: 'User already exists' });
@@ -36,7 +36,7 @@ router.post('/login-clubleader', async (req, res) => {
         const { username, password } = req.body;
         console.log("Login request received:", req.body);
 
-        // Find user by username
+        // Check if username exists
         const clubLeader = await ClubLeader.findOne({ username });
         if (!clubLeader) {
           return res.status(400).json({ error: "User not found" });
@@ -57,12 +57,10 @@ router.post('/login-clubleader', async (req, res) => {
         const token = jwt.sign(
           { id: clubLeader._id, username: clubLeader.username, role: "clubLeader", clubName: clubLeader.clubName },
           SECRET_KEY,
-          { expiresIn: "1d" }
+          { expiresIn: "30d" }
         );
-
         console.log("Generated Token:", token);
         res.status(200).json({ token });
-
     } catch (error) {
         console.error("Login Error:", error);
         res.status(500).json({ error: "Server error" });
@@ -74,7 +72,7 @@ router.post('/login-user', async (req, res) => {
         const { username, password } = req.body;
         console.log("Login request received:", req.body);
 
-        // Find user by username
+        // Check for username
         const user = await User.findOne({ username });
 
         if (!user) {
@@ -116,14 +114,12 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    // Extract the token from the Authorization header (remove "Bearer " prefix)
+    // Checks token value by remove "Bearer " prefix (first 7 letters)
     const tokenValue = token.startsWith('Bearer ') ? token.slice(7) : token;
-    
-    console.log("Received token:", tokenValue.substring(0, 20) + "..."); // Log partial token for debugging
-    
+    // Verifies that the token is genuine using the secret key    
     const decoded = jwt.verify(tokenValue, SECRET_KEY);
     req.user = decoded;
-    console.log("Decoded user:", req.user); // Log the decoded user object
+    // Middleware has finished its work
     next();
   } catch (error) {
     console.error("Token verification error:", error);
@@ -134,5 +130,6 @@ const authMiddleware = (req, res, next) => {
 // Export both the router and the auth middleware
 module.exports = {
   router,
+  // AuthMiddleware can be called auth
   auth: authMiddleware
 };
