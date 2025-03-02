@@ -4,9 +4,9 @@ const bcrypt = require('bcrypt');
 const ClubLeader = require('../models/ClubLeaderModel'); 
 
 const clubLeadersData = [
-    { username: 'John Doe', password: '123', clubName: 'Coding Club' },
-    { username: 'Jane Smith', password: '456', clubName: 'Robotics Club' },
-    { username: 'Alice Johnson', password: '789', clubName: 'Math Club' },
+    { name : 'John', username: 'Doe', password: '123', clubName: 'Coding Club' },
+    { name : 'Jane', username: 'Smith', password: '456', clubName: 'Robotics Club' },
+    { name : 'Alice', username: 'Johnson', password: '789', clubName: 'Math Club' },
 ];
 
 async function seedClubLeader() {
